@@ -23,6 +23,7 @@
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
+    box-shadow: 5px 20px 30px #00000059;
 }
 
 .you-col,
