@@ -3,12 +3,12 @@ document.querySelector('#stand').addEventListener('click', stand);
 document.querySelector('#deal').addEventListener('click', deal);
 
 
-const wonSound = new Audio('blackjack_assets/sounds/cash.mp3')
-const lostSound = new Audio('blackjack_assets/sounds/aww.mp3')
-const hitSound = new Audio('blackjack_assets/sounds/swish.m4a')
+var wonSound = new Audio('blackjack_assets/sounds/cash.mp3')
+var lostSound = new Audio('blackjack_assets/sounds/aww.mp3')
+var hitSound = new Audio('blackjack_assets/sounds/swish.m4a')
 
 var youPlay = true;
-var dealerPlay = false;
+var dealerPlay = true;
 var isDeal = false;
 var youBust = false;
 var dealerBust = false;
@@ -27,7 +27,7 @@ function hit() {
     if (youPlay) {
         let score = showCardsYou();
         let youScore = updateScoreYou(score);
-        dealerPlay = true;
+        // dealerPlay = true;
         // console.log(youScore);
         blacjack['youScore'] = youScore;
         if (youScore > 21) {
@@ -65,6 +65,34 @@ var cards = {
 
 var cardsArray = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'K', 'Q', 'A'];
 
+
+async function autoCards() {
+    youPlay = false;
+    dealerPlay = false;
+    blacjack['youScore'] = 0;
+    blacjack['dealerScore'] = 0;
+    for (let i = 0; i < 2; i++) {
+        hitSound.muted = true;
+        hitSound.play();
+        hitSound.muted = false;
+        let youScore = showCardsYou();
+        updateScoreYou(youScore);
+        blacjack['youScore'] += youScore;
+        // console.log(blacjack['youScore']);
+        await sleep(1000);
+
+    }
+    let dealerScore = showCardsDealer();
+    updateScoreDealer(dealerScore);
+    blacjack['dealerScore'] = dealerScore;
+    // await sleep(3000);
+
+    youPlay = true;
+    dealerPlay = true;
+}
+
+autoCards();
+
 function randomIndex() {
     return Math.floor(Math.random() * 13);
 }
@@ -80,8 +108,10 @@ function showCardsYou() {
         let randomCard = cardsArray[randomIndex()];
         // console.log(randomCard);
 
-        let hitSound = new Audio('blackjack_assets/sounds/swish.m4a');
+        // let hitSound = new Audio('blackjack_assets/sounds/swish.m4a');
         hitSound.play();
+        // hitSound.autoplay = true;
+        // hitSound.muted = false;
         let cardImg = document.createElement('img');
 
         let cardNum = parseInt(cards[randomCard]);
@@ -120,11 +150,11 @@ function showCardsDealer() {
         hitSound.play();
         let cardImg = document.createElement('img');
 
-        let cardNum = parseInt(cards[randomCard]);
+        // let cardNum = parseInt(cards[randomCard]);
 
         if (randomCard === 'A') {
             cardImg.src = `blackjack_assets/images/A.png`;
-            if (dealerScore + cardNum <= 21) {
+            if (dealerScore + 11 <= 21) {
                 setImageDealer(cardImg);
                 return 11;
             } else {
@@ -132,6 +162,7 @@ function showCardsDealer() {
                 return 1;
             }
         } else {
+
             cardImg.src = `blackjack_assets/images/${randomCard}.png`;
             setImageDealer(cardImg);
             return parseInt(cards[randomCard]);
@@ -234,10 +265,10 @@ function deal() {
         dealerPlay = false;
         // result(blacjack['youScore'], blacjack['dealerScore']);
 
-
+        autoCards();
         //reset
         youPlay = true;
-        dealerPlay = false;
+        dealerPlay = true;
         isDeal = false;
         youBust = false;
         dealerBust = false;
@@ -247,7 +278,7 @@ function deal() {
 
 // RESULT
 function result(youScore, dealerScore) {
-
+    // console.log(youScore, dealerScore);
     let resultMsg = document.querySelector('#result-msg');
     let wins = document.querySelector('#wins');
     let losses = document.querySelector('#losses');
